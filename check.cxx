@@ -13,6 +13,7 @@ int main(int argc, char * argv[])
     {
     std::cerr << "usage: " << argv[0] << " " << std::endl;
     // std::cerr << "  : " << std::endl;
+    exit(1);
     }
 
   const int dim = 2;
