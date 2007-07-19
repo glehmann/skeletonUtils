@@ -2,7 +2,7 @@
 PROJECT()
 
 # set the name of the input image used to run the test
-SET(INPUT_IMAGE ${CMAKE_SOURCE_DIR}/images/cthead1.png)
+SET(INPUT_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/images/cthead1.png)
 
 #include some macros from another file...
 INCLUDE(IJMacros.txt)
@@ -11,7 +11,7 @@ INCLUDE(IJMacros.txt)
 ENABLE_TESTING()
 INCLUDE(Dart)
 FIND_PROGRAM(ITK_TEST_DRIVER itkTestDriver)
-SET(TEST_COMMAND ${ITK_TEST_DRIVER} --add-before-env PATH ${CMAKE_BINARY_DIR})
+SET(TEST_COMMAND ${ITK_TEST_DRIVER} --add-before-env PATH ${CMAKE_CURRENT_BINARY_DIR})
 
 #Declare any external dependencies that your project may have here.
 #examples include: ITK, VTK, JPEG, PNG, OpenGL, ZLIB, Perl, Java
@@ -79,5 +79,5 @@ ENDIF(BUILD_TESTING)
 
 ADD_TEST(Test ${TEST_COMMAND}
    check ${INPUT_IMAGE} out.png
-   --compare out.png ${CMAKE_SOURCE_DIR}/images/test.png
+   --compare out.png ${CMAKE_CURRENT_SOURCE_DIR}/images/test.png
 )
