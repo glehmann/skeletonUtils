@@ -1,21 +1,5 @@
-/*=========================================================================
-
-  Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkNewBinaryPruningImageFilter.h,v $
-  Language:  C++
-  Date:      $Date: 2006/04/23 04:12:03 $
-  Version:   $Revision: 1.6 $
-
-  Copyright (c) Insight Software Consortium. All rights reserved.
-  See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
-
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
-     PURPOSE.  See the above copyright notices for more information.
-
-=========================================================================*/
-#ifndef __itkNewBinaryPruningImageFilter_h
-#define __itkNewBinaryPruningImageFilter_h
+#ifndef __itkFastBinaryPruningImageFilter_h
+#define __itkFastBinaryPruningImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -23,7 +7,7 @@
 
 namespace itk
 {
-/** \class NewBinaryPruningImageFilter
+/** \class FastBinaryPruningImageFilter
  *
  * \brief This filter removes "spurs" of less than a certain
  * length in the input image.
@@ -31,11 +15,11 @@ namespace itk
  * This class is parametrized over the type of the input image
  * and the type of the output image.
  *
- * The input is assumed to be a binary image.  
+ * The background is assumed to be zero and skeleton non zero
  *
- * This filter is a sequential pruning algorithm and known to be computational time
- * dependable of the image size.  The algorithm is the N-dimensional version
- * of that given for two dimensions in:
+ * This version of the filter is more efficient, extendable to
+ * arbitary dimensions and has the novel benefit of producing correct
+ * answers.
  * 
  * Rafael C. Gonzales and Richard E. Woods. 
  * Digital Image Processing. 
@@ -49,12 +33,12 @@ namespace itk
  */
 
 template <class TInputImage,class TOutputImage>
-class ITK_EXPORT NewBinaryPruningImageFilter :
+class ITK_EXPORT FastBinaryPruningImageFilter :
     public ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef NewBinaryPruningImageFilter    Self;
+  typedef FastBinaryPruningImageFilter    Self;
   typedef ImageToImageFilter<TInputImage,TOutputImage> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
@@ -63,7 +47,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( NewBinaryPruningImageFilter, ImageToImageFilter );
+  itkTypeMacro( FastBinaryPruningImageFilter, ImageToImageFilter );
 
   /** Type for input image. */
   typedef   TInputImage       InputImageType;
@@ -125,21 +109,24 @@ public:
     (Concept::LessThanComparable<PixelType, int>));
   /** End concept checking */
 #endif
-
   virtual void GenerateInputRequestedRegion() throw(InvalidRequestedRegionError);
 
 protected:
-  NewBinaryPruningImageFilter();
-  virtual ~NewBinaryPruningImageFilter() {};
+  FastBinaryPruningImageFilter();
+  virtual ~FastBinaryPruningImageFilter() {};
   void PrintSelf(std::ostream& os, Indent indent) const;
 
-  /** Compute thinning Image. */
-  void GenerateData();
   void EnlargeOutputRequestedRegion(DataObject *itkNotUsed(output));
 
-  void doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2);
+  //typedef typename OutputImageType::IndexType IndexType;
+
+  typedef std::vector<IndexType> IndexVec;
+  /** Compute thinning Image. */
+  void GenerateData();
+
+  void doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2, IndexVec &v1, IndexVec &v2);
 private:   
-  NewBinaryPruningImageFilter(const Self&); //purposely not implemented
+  FastBinaryPruningImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   bool m_FullyConnected;
   unsigned int                  m_Iteration;
@@ -149,7 +136,7 @@ private:
 } //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkNewBinaryPruningImageFilter.txx"
+#include "itkFastBinaryPruningImageFilter.txx"
 #endif
 
 #endif
