@@ -4,6 +4,9 @@ PROJECT(skeletonUtils)
 # set the name of the input image used to run the test
 SET(INPUT_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/images/cthead1.png)
 
+SET(INPUT_SKEL ${CMAKE_CURRENT_SOURCE_DIR}/images/ctskel.tif)
+SET(INPUT_LINE ${CMAKE_CURRENT_SOURCE_DIR}/images/diag.tif)
+
 #include some macros from another file...
 INCLUDE(IJMacros.txt)
 
@@ -66,9 +69,10 @@ ENDIF(BUILD_WRAPPERS)
 
 IF(BUILD_TESTING)
 
-SET(CurrentExe "demoError")
+FOREACH(CurrentExe "demoError" "basicPrune")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
+ENDFOREACH(CurrentExe)
 
 ENDIF(BUILD_TESTING)
 
@@ -80,7 +84,11 @@ ENDIF(BUILD_TESTING)
 #any tests you can comment out or delete the following line.
 # ADD_TEST(Testname ExecutableToRun arg1 arg2 arg3)
 
-ADD_TEST(Test ${TEST_COMMAND}
-   check ${INPUT_IMAGE} out.png
-   --compare out.png ${CMAKE_CURRENT_SOURCE_DIR}/images/test.png
+ADD_TEST(basicPrune ${TEST_COMMAND}
+   basicPrune ${INPUT_SKEL} basicskel_1.png
+   --compare basicskel_1.png ${CMAKE_CURRENT_SOURCE_DIR}/images/basicskel_1.png
+)
+
+ADD_TEST(demoError ${TEST_COMMAND}
+   demoError ${INPUT_LINE} failed.png
 )

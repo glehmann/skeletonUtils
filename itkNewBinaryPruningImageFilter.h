@@ -93,9 +93,6 @@ public:
   /** Neighborhood iterator type */
   typedef NeighborhoodIterator<TInputImage> NeighborhoodIteratorType ;
   
-  /** Get Skelenton by thinning image. */
-  OutputImageType * GetPruning(void);
-
   /** Set/Get the iteration value */
   itkSetMacro(Iteration, unsigned int);
   itkGetMacro(Iteration, unsigned int);
@@ -136,12 +133,6 @@ protected:
 
   /** Compute thinning Image. */
   void GenerateData();
-
-  /** Prepare data. */
-  void PrepareData();
-
-  /**  Compute thinning Image. */
-  void ComputePruneImage();
 
   void doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2);
 private:   
