@@ -1,5 +1,5 @@
 #Change PROJECT_NAME to the name of your project
-PROJECT()
+PROJECT(skeletonUtils)
 
 # set the name of the input image used to run the test
 SET(INPUT_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/images/cthead1.png)
@@ -35,6 +35,9 @@ SET(Libraries
   ITKIO
 )
 
+INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
 # install devel files
 OPTION(INSTALL_DEVEL_FILES "Install C++ headers" ON)
@@ -63,7 +66,7 @@ ENDIF(BUILD_WRAPPERS)
 
 IF(BUILD_TESTING)
 
-SET(CurrentExe "check")
+SET(CurrentExe "demoError")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 

@@ -33,7 +33,7 @@ colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
 
 % The title should be descriptive enough for people to be able to find
 % the relevant document. 
-\title{}
+\title{Utilities for manipulating skeletons}
 
 % Increment the release number whenever significant changes are made.
 % The author and/or editor can define 'significant' however they like.
@@ -41,8 +41,8 @@ colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
 
 % At minimum, give your name and an email address.  You can include a
 % snail-mail address if you like.
-\author{}
-\authoraddress{}
+\author{Richard Beare and Gita Das}
+\authoraddress{Richard.Beare@med.monash.edu.au, Gita.Das@med.monash.edu.au}
 
 \begin{document}
 \maketitle
@@ -56,9 +56,50 @@ colorlinks,linkcolor={blue},citecolor={blue},urlcolor={blue},
 \noindent
 % The abstract should be a paragraph or two long, and describe the
 % scope of the document.
+Pruning and debarbing are common operations used for cleaning up
+skeletons of complex shapes in preparation for other processing. ITK
+has no debarbing filter and its pruning filter is wrong and limited to
+2D. This article presents a brief background to pruning and debarbing
+and introduces filters to carry out these operations.
 \end{abstract}
 
 \tableofcontents
+
+\section{Introduction}
+Skeletons are essentially the centre lines of shapes and are often
+used as part of an object characterisation process, for example the
+length of a curving, linear object could be estimated using the length
+of the skeleton. In general a skeleton is produced by finding ridge
+lines in a distance transform using a queue based erosion or some sort
+of fast marching approach. However the skeletons produced from real
+data generally have a number of artifacts in the form of barbs that
+result from small imperfections in the edge of the mask from which the
+skeleton is produced. Such barbs are often undesirable and can be
+removed using pruning and debarbing steps.
+
+\section{Pruning}
+Pruning can be thought of as an erosion of a skeleton, with each
+branch of the skeleton being reduced in length by a defined number of
+voxels. A loop in a skeleton will never be eliminated by pruning
+because there are no endpoints.
+
+\section{Debarbing}
+Debarbing is a morphological opening of a skeleton, in which barbs
+that are less than the defined length are removed and all others
+remain the same.
+
+\section{itkBinaryPruningImageFilter}
+The pruning implementation currently in ITK is limited and wrong, in
+that it a single iteration can remove an entire skeleton if the
+skeleton is oriented such that successive elements of a branch are
+visited in raster order. In addition, it doesn't support different
+types of connectivity, assumes that skeleton values are 1, is limited
+to 2 dimensions. The fundamental problem with the algorithm is that it
+attempts to operate in place on the output image.
+
+This fault is demonstrated using test??
+
+\section{}
 
 
 % \url{http://www.itk.org}
