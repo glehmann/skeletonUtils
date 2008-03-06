@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkBinaryPruningImageFilter.h,v $
+  Module:    $RCSfile: itkNewBinaryPruningImageFilter.h,v $
   Language:  C++
   Date:      $Date: 2006/04/23 04:12:03 $
   Version:   $Revision: 1.6 $
@@ -14,8 +14,8 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef __itkBinaryPruningImageFilter_h
-#define __itkBinaryPruningImageFilter_h
+#ifndef __itkNewBinaryPruningImageFilter_h
+#define __itkNewBinaryPruningImageFilter_h
 
 #include <itkImageToImageFilter.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -23,7 +23,7 @@
 
 namespace itk
 {
-/** \class BinaryPruningImageFilter
+/** \class NewBinaryPruningImageFilter
  *
  * \brief This filter removes "spurs" of less than a certain
  * length in the input image.
@@ -49,12 +49,12 @@ namespace itk
  */
 
 template <class TInputImage,class TOutputImage>
-class ITK_EXPORT BinaryPruningImageFilter :
+class ITK_EXPORT NewBinaryPruningImageFilter :
     public ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
   /** Standard class typedefs. */
-  typedef BinaryPruningImageFilter    Self;
+  typedef NewBinaryPruningImageFilter    Self;
   typedef ImageToImageFilter<TInputImage,TOutputImage> Superclass;
   typedef SmartPointer<Self> Pointer;
   typedef SmartPointer<const Self> ConstPointer;
@@ -63,7 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro( BinaryPruningImageFilter, ImageToImageFilter );
+  itkTypeMacro( NewBinaryPruningImageFilter, ImageToImageFilter );
 
   /** Type for input image. */
   typedef   TInputImage       InputImageType;
@@ -130,8 +130,8 @@ public:
 #endif
 
 protected:
-  BinaryPruningImageFilter();
-  virtual ~BinaryPruningImageFilter() {};
+  NewBinaryPruningImageFilter();
+  virtual ~NewBinaryPruningImageFilter() {};
   void PrintSelf(std::ostream& os, Indent indent) const;
 
   /** Compute thinning Image. */
@@ -145,7 +145,7 @@ protected:
 
   void doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2);
 private:   
-  BinaryPruningImageFilter(const Self&); //purposely not implemented
+  NewBinaryPruningImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
   bool m_FullyConnected;
   unsigned int                  m_Iteration;
@@ -155,7 +155,7 @@ private:
 } //end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkBinaryPruningImageFilter.txx"
+#include "itkNewBinaryPruningImageFilter.txx"
 #endif
 
 #endif

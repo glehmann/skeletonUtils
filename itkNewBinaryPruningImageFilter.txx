@@ -1,7 +1,7 @@
 /*=========================================================================
 
   Program:   Insight Segmentation & Registration Toolkit
-  Module:    $RCSfile: itkBinaryPruningImageFilter.txx,v $
+  Module:    $RCSfile: itkNewBinaryPruningImageFilter.txx,v $
   Language:  C++
   Date:      $Date: 2004/10/18 21:29:12 $
   Version:   $Revision: 1.4 $
@@ -14,12 +14,12 @@
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
-#ifndef _itkBinaryPruningImageFilter_txx
-#define _itkBinaryPruningImageFilter_txx
+#ifndef _itkNewBinaryPruningImageFilter_txx
+#define _itkNewBinaryPruningImageFilter_txx
 
 #include <iostream>
 
-#include "itkBinaryPruningImageFilter.h"
+#include "itkNewBinaryPruningImageFilter.h"
 #include "itkImageRegionConstIterator.h"
 #include "itkImageRegionIterator.h"
 #include "itkNeighborhoodIterator.h"
@@ -36,8 +36,8 @@ namespace itk
  *    Constructor
  */
 template <class TInputImage,class TOutputImage>
-BinaryPruningImageFilter<TInputImage,TOutputImage>
-::BinaryPruningImageFilter()
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
+::NewBinaryPruningImageFilter()
 {
   this->SetNumberOfRequiredOutputs( 1 );
 
@@ -52,9 +52,9 @@ BinaryPruningImageFilter<TInputImage,TOutputImage>
  *  Return the pruning Image pointer
  */
 template <class TInputImage,class TOutputImage>
-typename BinaryPruningImageFilter<
+typename NewBinaryPruningImageFilter<
   TInputImage,TOutputImage>::OutputImageType * 
-BinaryPruningImageFilter<TInputImage,TOutputImage>
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
 ::GetPruning(void)
 {
   return  dynamic_cast< OutputImageType * >(
@@ -67,7 +67,7 @@ BinaryPruningImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage,class TOutputImage>
 void 
-BinaryPruningImageFilter<TInputImage,TOutputImage>
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
 ::PrepareData(void) 
 {
   
@@ -105,7 +105,7 @@ BinaryPruningImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage,class TOutputImage>
 void 
-BinaryPruningImageFilter<TInputImage,TOutputImage>
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
 ::ComputePruneImage() 
 {
 
@@ -157,7 +157,7 @@ BinaryPruningImageFilter<TInputImage,TOutputImage>
 
 template <class TInputImage,class TOutputImage>
 void 
-BinaryPruningImageFilter<TInputImage,TOutputImage>
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
 ::doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2) 
 {
   typedef ConstShapedNeighborhoodIterator<OutputImageType> ShapedNeighborhoodIteratorType;
@@ -210,7 +210,7 @@ BinaryPruningImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage,class TOutputImage>
 void 
-BinaryPruningImageFilter<TInputImage,TOutputImage>
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
 ::GenerateData() 
 {
 
@@ -278,7 +278,7 @@ BinaryPruningImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage,class TOutputImage>
 void 
-BinaryPruningImageFilter<TInputImage,TOutputImage>
+NewBinaryPruningImageFilter<TInputImage,TOutputImage>
 ::PrintSelf(std::ostream& os, Indent indent) const
 {
   Superclass::PrintSelf(os,indent);
