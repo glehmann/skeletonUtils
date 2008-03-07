@@ -13,6 +13,7 @@
 #include "itkSize.h"
 #include "itkConstantBoundaryCondition.h"
 
+
 namespace itk
 {
 
@@ -63,7 +64,7 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
 template <class TInputImage,class TOutputImage>
 void 
 FastBinaryPruningImageFilter<TInputImage,TOutputImage>
-::doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2, IndexVec &v1, IndexVec &v2) 
+::doErode(typename TOutputImage::Pointer &t1, IndexVec &v1, IndexVec &v2, ProgressReporter *progress) 
 {
   // in this version we iterate over the voxels known to be members of
   // the skeleton.
@@ -73,6 +74,7 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
   typename OutputImageType::RegionType region  = this->GetOutput()->GetRequestedRegion();
 
   ShapedNeighborhoodIteratorType it(radius, t1, region);
+  IndexVec deletedPoints;
 
   ConstantBoundaryCondition<OutputImageType> bc;
   bc.SetConstant(0);
@@ -80,10 +82,8 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
   setConnectivity( &it, m_FullyConnected );
 
   typename ShapedNeighborhoodIteratorType::ConstIterator nIt;
-  ImageRegionIterator< TOutputImage > otA( t2,  region );
 
   it.GoToBegin();
-  otA.GoToBegin();
 
   typedef typename IndexVec::const_iterator vecItType;
   for (vecItType vecIt = v1.begin(); vecIt != v1.end(); vecIt++)
@@ -92,7 +92,6 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
     IndexType Ind = *vecIt;
     // move the iterators to this index
     it += Ind - it.GetIndex();
-    otA.SetIndex(Ind);
     OutputPixelType V = it.GetCenterPixel();
 
     int genus = 0;
@@ -103,14 +102,20 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
     if (genus < 2)
       {
       // this point is being removed
-      otA.Set( 0 );
+       deletedPoints.push_back(Ind);
       }
     else
       {
       // this point is being retained. Copy the index to the index buffer
-      otA.Set( V );
       v2.push_back(Ind);
       }
+    progress->CompletedPixel();
+    }
+  // now we need to remove the endpoints from the input
+  for (vecItType vecIt = deletedPoints.begin(); vecIt != deletedPoints.end();
+       vecIt++)
+    {
+    t1->SetPixel(*vecIt, 0);
     }
 }
 /**
@@ -124,25 +129,14 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
   this->AllocateOutputs();
   InputImagePointer  inputImage  = this->GetInput();
   OutputImagePointer outputImage = this->GetOutput();
-  // allocate buffer images
-  typename OutputImageType::Pointer t1 = OutputImageType::New();
-  typename OutputImageType::Pointer t2 = OutputImageType::New();
   typename OutputImageType::RegionType region  = this->GetOutput()->GetRequestedRegion();
   
-  t1->SetRegions(region);
-  t2->SetRegions(region);
-  
-  t1->Allocate();
-  t2->Allocate();
-  // Copy and cast input to a buffer image while assembling a list of
-  // offsets from the starting point
-
-  t2->FillBuffer(0);
+  ProgressReporter progress(this, 0, region.GetNumberOfPixels()*2);
 
   IndexVec v1, v2;
 
   ImageRegionConstIterator< TInputImage >  it( inputImage,  region );
-  ImageRegionIterator< TOutputImage > ot( t1,  region );
+  ImageRegionIterator< TOutputImage > ot( outputImage,  region );
   
   it.GoToBegin();
   ot.GoToBegin();
@@ -159,31 +153,16 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
       }
     ++it;
     ++ot;
+    progress.CompletedPixel();
     }
   
   // perform erosions
   for (unsigned i = 0; i < m_Iteration; i++)
     {
-    doErode(t1, t2, v1, v2);
-    std::swap(t1, t2);
+    doErode(outputImage, v1, v2, &progress);
     std::swap(v1, v2);
-    v1.clear();
+    v2.clear();
     }
-  // copy result to output
-  ImageRegionConstIterator< TOutputImage >  itA( t1,  region );
-  ImageRegionIterator< TOutputImage > otA( outputImage,  region );
-  
-  itA.GoToBegin();
-  otA.GoToBegin();
-  
-  itkDebugMacro(<< "PrepareData: Copy input to output");
-  
-  while( !otA.IsAtEnd() )
-    {
-    otA.Set( itA.Get() );
-    ++itA;
-    ++otA;
-    }   
 } // end GenerateData()
 
 /**

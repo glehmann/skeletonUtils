@@ -69,7 +69,7 @@ ENDIF(BUILD_WRAPPERS)
 
 IF(BUILD_TESTING)
 
-FOREACH(CurrentExe "demoError" "basicPrune" "fastPrune")
+FOREACH(CurrentExe "demoError" "basicPrune" "fastPrune" "prunePerformance")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 ENDFOREACH(CurrentExe)
@@ -89,9 +89,18 @@ ADD_TEST(basicPrune ${TEST_COMMAND}
    --compare basicskel_1.png ${CMAKE_CURRENT_SOURCE_DIR}/images/basicskel_1.png
 )
 
-ADD_TEST(fastPrune ${TEST_COMMAND}
-   fastPrune ${INPUT_SKEL} basicskel_20.png fastskel_20.png
-   --compare basicskel_1.png ${CMAKE_CURRENT_SOURCE_DIR}/images/basicskel_1.png
+ADD_TEST(fastPrune2 ${TEST_COMMAND}
+   fastPrune 2 ${INPUT_SKEL} fastskel_2.png basicskel_2.png 
+   --compare fastskel_2.png basicskel_2.png
+)
+
+ADD_TEST(fastPrune10 ${TEST_COMMAND}
+   fastPrune 10 ${INPUT_SKEL} fastskel_10.png basicskel_10.png 
+   --compare fastskel_10.png basicskel_10.png
+)
+ADD_TEST(fastPrune20 ${TEST_COMMAND}
+   fastPrune 20 ${INPUT_SKEL} fastskel_20.png basicskel_20.png
+   --compare fastskel_20.png basicskel_20.png
 )
 
 ADD_TEST(demoError ${TEST_COMMAND}

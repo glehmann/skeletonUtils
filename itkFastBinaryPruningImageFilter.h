@@ -4,7 +4,7 @@
 #include <itkImageToImageFilter.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkNeighborhoodIterator.h>
-
+#include <itkProgressReporter.h>
 namespace itk
 {
 /** \class FastBinaryPruningImageFilter
@@ -124,7 +124,7 @@ protected:
   /** Compute thinning Image. */
   void GenerateData();
 
-  void doErode(typename TOutputImage::Pointer &t1, typename TOutputImage::Pointer &t2, IndexVec &v1, IndexVec &v2);
+  void doErode(typename TOutputImage::Pointer &t1, IndexVec &v1, IndexVec &v2, ProgressReporter *progress);
 private:   
   FastBinaryPruningImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented

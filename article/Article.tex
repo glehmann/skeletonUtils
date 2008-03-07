@@ -100,7 +100,43 @@ attempts to operate in place on the output image.
 This fault is demonstrated using test??
 
 In addition it visits every voxel in an image every iteration, wihch
-is very inefficient, especially when dealing with long barbs.
+is very inefficient, especially when dealing with long barbs in 3D
+images.
+
+An alternative, more efficient approach is to store the location of
+each voxel in the skeleton and iterate over those locations. In 3D
+images the skeleton typically occupies a very small fraction of the
+total voxel, so this can be a considerable saving.
+
+This approach is implemented in the {\em
+  itkFastBinaryPruningImageFilter}, resulting in a filter that
+performs much better and eliminates the need for internal image
+buffers used in the direct implementation. Performance figures for the
+two filters on the 3D ``bunny'' skeleton, provided as part of the
+ITKSkeleton package, are illustrated in Table
+\ref{tbl:pruneperformance}. In this example the improved version
+provides virtually constant time performance over the entire range of
+tests and is 625 times faster than the basic implementation at a prune
+length of 100. This test can be reproduced using ``./prunePerformance 10 images/bunnySkeleton.nrrd''.
+
+\begin{table}[phtb]
+\centering
+\small
+\begin{tabular}{ccc}
+\hline
+Iterations & Basic  & Fast \\
+1  &     0.906  & 0.104  \\
+3  &     2.42   & 0.103  \\
+7  &     5.47   & 0.105  \\
+10 &     7.78   & 0.105  \\
+30 &     23.1   & 0.11  \\
+70  &    53.7   & 0.117  \\
+100  &   76.9   & 0.123  \\
+\hline
+\end{tabular}
+\caption{Execution times in seconds for pruning of the $258 \times 258 \times 182$ bunnSkeleton image. \label{tbl:pruneperformance}}
+\end{table}
+
 
 \section{}
 
