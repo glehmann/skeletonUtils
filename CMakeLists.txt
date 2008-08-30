@@ -69,7 +69,7 @@ ENDIF(BUILD_WRAPPERS)
 
 IF(BUILD_TESTING)
 
-FOREACH(CurrentExe "demoError" "basicPrune" "fastPrune" "prunePerformance")
+FOREACH(CurrentExe "skelTest" "demoError" "basicPrune" "fastPrune" "prunePerformance")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 ENDFOREACH(CurrentExe)
