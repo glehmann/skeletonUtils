@@ -12,28 +12,28 @@
 
 namespace itk
 {
-	template< class TIterator >
-	TIterator*
-	setCellConnectivity( TIterator* it, int zeros = 0)
-	{
-		typename TIterator::OffsetType offset;
-		it->ClearActiveList();
-		unsigned int centerIndex = it->GetCenterNeighborhoodIndex();
-		for( unsigned int d=0; d < centerIndex*2 + 1; d++ )
-		{
-			offset = it->GetOffset( d );
-			int zcount = std::count(offset.begin(), offset.end(), 0);
-			if (zcount >= zeros)
-			{
-				it->ActivateOffset( offset );
-			}
-		}
+template< class TIterator >
+TIterator*
+setCellConnectivity( TIterator* it, int zeros = 0)
+{
+  typename TIterator::OffsetType offset;
+  int dim = offset.GetOffsetDimension();
+  it->ClearActiveList();
+  unsigned int centerIndex = it->GetCenterNeighborhoodIndex();
+  for( unsigned int d=0; d < centerIndex*2 + 1; d++ )
+    {
+    offset = it->GetOffset( d );
+    int zcount = std::count(&(offset[0]), &(offset[dim]), 0);
+    if (zcount >= zeros)
+      {
+      it->ActivateOffset( offset );
+      }
+    }
 		
-		offset.Fill(0);
-		it->DeactivateOffset( offset );
-		
-		return it;
-	}
+  offset.Fill(0);
+  it->DeactivateOffset( offset );
+  return it;
+}
 	
 	
 	
