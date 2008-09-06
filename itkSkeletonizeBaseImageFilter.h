@@ -14,6 +14,23 @@ namespace itk
  *  This filter takes an ordering image, usually a distance transform,
  *  as input and produces a skeleton. Any ordering image voxel that is
  *  non zero is part of the mask being skeletonized.
+ *  
+ *  Skeleton characteristics are defined by connectivity of the
+ *  foreground (skeleton) and background. Connectivities are defined
+ *  according to numbers between 0 and (ImageDimension - 1). Basically
+ *  this number refers to the minimum number of zeros in each offset
+ *  to a neighbour. A connectivity of 0 by this definition is
+ *  therefore equivalent to "fully connected" by other definitions.
+ *  
+ *  Only certain combinations of foreground and background
+ *  connectivity are valid.
+ *
+ *  This filter is based on the InsightJournal submission "Digital
+ *  Topology", Julien Lamy, http://hdl.handle.net/1926/304, but with
+ *  greater use of ITK iterators and hopefully less commplex
+ *  structure. The theoretical work was carried out by Giles Bertrand
+ *  and Gregoire Malandain.
+ *
  *  \author Richard Beare	 
  */
 template<class TOrderImage, class TImage>
