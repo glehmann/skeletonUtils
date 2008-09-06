@@ -1,5 +1,5 @@
-#ifndef __itkSkeletonizationBaseImageFilter_h
-#define __itkSkeletonizationBaseImageFilter_h
+#ifndef __itkSkeletonizeBaseImageFilter_h
+#define __itkSkeletonizeBaseImageFilter_h
 
 #include <itkImage.h>
 #include <itkImageToImageFilter.h>
@@ -9,11 +9,15 @@
 namespace itk
 {
 	
-/**
-	 
-	 */
+/** \class SkeletonizeBaseImageFilter
+ *  \brief Skeleton from distance transform
+ *  This filter takes an ordering image, usually a distance transform,
+ *  as input and produces a skeleton. Any ordering image voxel that is
+ *  non zero is part of the mask being skeletonized.
+ *  \author Richard Beare	 
+ */
 template<class TOrderImage, class TImage>
-class SkeletonizeBaseImageFilter : public ImageToImageFilter<TOrderImage, TImage>
+class ITK_EXPORT SkeletonizeBaseImageFilter : public ImageToImageFilter<TOrderImage, TImage>
 {
 public :
   // standard ITK type definitions
@@ -23,7 +27,7 @@ public :
   typedef SmartPointer<Self const> ConstPointer;
 		
   itkNewMacro(Self);
-  itkTypeMacro(SkeletonizeImageFilter, ImageToImageFilter);
+  itkTypeMacro(SkeletonizeBaseImageFilter, ImageToImageFilter);
 		
 		
   //typedef TImage InputImageType;
@@ -53,19 +57,6 @@ public :
 
   itkSetMacro(BackgroundCellConnectivity, unsigned);
   itkGetMacro(BackgroundCellConnectivity, unsigned);
-		
-//   void SetOrderingImage(OrderingImageType *input)
-//   {
-//     this->SetNthInput( 1, const_cast<OrderingImageType *>(input) );
-//   }
-		
-//   const OrderingImageType * GetOrderingImage() const
-//   {    
-//     return static_cast<OrderingImageType*>(
-//       const_cast<DataObject *>(this->ProcessObject::GetInput(1)));
-//   }
-		
-		
 		
 protected :
 

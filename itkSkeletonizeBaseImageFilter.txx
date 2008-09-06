@@ -1,5 +1,5 @@
-#ifndef __itkSkeletonizationImageFilter_txx
-#define __itkSkeletonizationImageFilter_txx
+#ifndef __itkSkeletonizeBaseImageFilter_txx
+#define __itkSkeletonizeBaseImageFilter_txx
 
 #include <itkImageRegionConstIteratorWithIndex.h>
 #include <itkNumericTraits.h>
@@ -95,32 +95,29 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
   this->AllocateOutputs();
   typename OutputImageType::Pointer outputImage = this->GetOutput(0);
 		
-  outputImage->FillBuffer(0);
+  outputImage->FillBuffer(m_BackgroundValue);
 
   OrderingImageConstPointerType orderingImage = this->GetInput();
 		
   // set up structures for connected component labelling
   SetupConnectivity();
 
+
   HierarchicalQueue<typename OrderingImageType::PixelType,
                      typename OrderingImageType::IndexType,
                      std::less<typename OrderingImageType::PixelType> > hq;
 
+  ProgressReporter progress(this, 0, outputImage->GetRequestedRegion().GetNumberOfPixels()*2);
 
   // collect nonzero voxels from the ordering image and put in the
   // priority queue
   typedef typename itk::ImageRegionConstIteratorWithIndex<OrderingImageType> ConstItType;
 
-  //typedef typename itk::ImageRegionConstIteratorWithIndex<InputImageType> ConstInItType;
-
   ConstItType It(orderingImage, this->GetOutput()->GetRequestedRegion());
-  //ConstInItType inIt(this->GetInput(), this->GetOutput()->GetRequestedRegion());
 
   // an array to track which voxels are on the queue
   bool* inQueue =
     new bool[outputImage->GetRequestedRegion().GetNumberOfPixels()];
-
-  //inIt.GoToBegin();
 
   for (It.GoToBegin(); !It.IsAtEnd();++It)
     {
@@ -138,6 +135,7 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
       inQueue[outputImage->ComputeOffset(It.GetIndex()) ] = false;
 
       }
+    progress.CompletedPixel();
     }
 
 
@@ -209,7 +207,6 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 	    {
 	    // add the neighbour to the queue
 	    inQueue[OO] = true;
-//	    std::cout << "Pushing " << Ind << std::endl;
 	    hq.Push(P, Ind);
 	    }
 	  }
@@ -217,7 +214,7 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 	}
 
       }
-
+    progress.CompletedPixel();
     }
   delete[] inQueue;
   delete[] cubeBuffer;
@@ -414,13 +411,13 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
   // foreground
   unsigned SZ = m_FGConnect.size();
   
-
   // remove the centre point
   cubeBuffer[CentInd] = false;
  
   int fgCC = countCC(cubeBuffer, m_FGConnect,
 		     m_FGConnectivityTest,
 		     m_FGNeighConnectivityTest);
+  
 
   if (fgCC != 1) return (false);
 
@@ -434,11 +431,11 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
     }
   cubeBuffer[CentInd] = false;
 
+
   int bgCC = countCC(cubeBuffer, m_BGConnect,
 		     m_BGConnectivityTest,
 		     m_BGNeighConnectivityTest);
-
-
+  
   if (bgCC != 1) return(false);
 
   return(true);
@@ -460,13 +457,13 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
   unsigned seed = 0;
   for (unsigned J = 0; J < SZ; J++)
     {
-    if (cubeBuffer[J] && m_FGConnectivityTest[J])
+    if (cubeBuffer[J] && ConnectivityTest[J])
       {
       seed = J;
       break;
       }
     }
-
+  
 //   while ((seed != SZ) &&
 // 	 ((cubeBuffer[seed] == 0) || !ConnectivityTest[seed]))
 //     {

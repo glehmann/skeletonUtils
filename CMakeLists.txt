@@ -3,6 +3,7 @@ PROJECT(skeletonUtils)
 
 # set the name of the input image used to run the test
 SET(INPUT_IMAGE ${CMAKE_CURRENT_SOURCE_DIR}/images/cthead1.png)
+SET(INPUT_IMAGE3D ${CMAKE_CURRENT_SOURCE_DIR}/images/bunnyPadded.nrrd)
 
 SET(INPUT_SKEL ${CMAKE_CURRENT_SOURCE_DIR}/images/ctskel.tif)
 SET(INPUT_LINE ${CMAKE_CURRENT_SOURCE_DIR}/images/diag.tif)
@@ -69,7 +70,7 @@ ENDIF(BUILD_WRAPPERS)
 
 IF(BUILD_TESTING)
 
-FOREACH(CurrentExe "skelTest" "demoError" "basicPrune" "fastPrune" "prunePerformance")
+FOREACH(CurrentExe "skelTest" "skelTest2" "skelTest3d" "demoError" "basicPrune" "fastPrune" "prunePerformance")
 ADD_EXECUTABLE(${CurrentExe} ${CurrentExe}.cxx)
 TARGET_LINK_LIBRARIES(${CurrentExe} ${Libraries})
 ENDFOREACH(CurrentExe)
@@ -83,6 +84,18 @@ ENDIF(BUILD_TESTING)
 #for this test.  Include as many tests as you like.  If your project doesn't have
 #any tests you can comment out or delete the following line.
 # ADD_TEST(Testname ExecutableToRun arg1 arg2 arg3)
+
+ADD_TEST(skelTest ${TEST_COMMAND}
+		  skelTest ${INPUT_IMAGE} skel1.png
+)
+
+ADD_TEST(skelTest2 ${TEST_COMMAND}
+		  skelTest2 ${INPUT_IMAGE} skel2.png
+)
+
+ADD_TEST(skelTest3d ${TEST_COMMAND}
+		  skelTest3d ${INPUT_IMAGE3D} skel3.nrrd
+)
 
 ADD_TEST(basicPrune ${TEST_COMMAND}
    basicPrune ${INPUT_SKEL} basicskel_1.png
