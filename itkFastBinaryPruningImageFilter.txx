@@ -9,7 +9,7 @@
 #include "itkNeighborhoodIterator.h"
 #include "itkShapedNeighborhoodIterator.h"
 #include "itkConstShapedNeighborhoodIterator.h"
-#include "itkConnectedComponentAlgorithm.h"
+#include "itkSkeletonConnectivity.h"
 #include "itkSize.h"
 #include "itkConstantBoundaryCondition.h"
 
@@ -30,7 +30,7 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
   this->SetNthOutput( 0, pruneImage.GetPointer() );
 
   m_Iteration = 3;
-  m_FullyConnected = true;
+  m_ForegroundCellConnectivity = 0;
 }
 
 
@@ -79,7 +79,7 @@ FastBinaryPruningImageFilter<TInputImage,TOutputImage>
   ConstantBoundaryCondition<OutputImageType> bc;
   bc.SetConstant(0);
   it.OverrideBoundaryCondition(&bc);
-  setConnectivity( &it, m_FullyConnected );
+  setCellConnectivity( &it, m_ForegroundCellConnectivity );
 
   typename ShapedNeighborhoodIteratorType::ConstIterator nIt;
 

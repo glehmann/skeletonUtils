@@ -92,9 +92,13 @@ public:
    * FullyConnectedOff.  For objects that are 1 pixel wide, use
    * FullyConnectedOn.
    */
-  itkSetMacro(FullyConnected, bool);
-  itkGetConstReferenceMacro(FullyConnected, bool);
-  itkBooleanMacro(FullyConnected);
+//  itkSetMacro(FullyConnected, bool);
+//  itkGetConstReferenceMacro(FullyConnected, bool);
+//  itkBooleanMacro(FullyConnected);
+
+	itkSetMacro(ForegroundCellConnectivity, unsigned);
+	itkGetMacro(ForegroundCellConnectivity, unsigned);
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Start concept checking */
   itkConceptMacro(SameDimensionCheck,
@@ -128,7 +132,8 @@ protected:
 private:   
   FastBinaryPruningImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&); //purposely not implemented
-  bool m_FullyConnected;
+  //bool m_FullyConnected;
+	unsigned m_ForegroundCellConnectivity;
   unsigned int                  m_Iteration;
 
 }; // end of BinaryThinningImageFilter class
