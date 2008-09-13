@@ -11,6 +11,8 @@
 #include "itkHierarchicalQueue.h"
 #include <queue>
 
+//#define SKEL_DEBUG
+
 namespace itk
 {
 	
@@ -61,7 +63,6 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
   // get pointers to the inputs
 		
   OrderingImagePointerType orderingPtr = const_cast< OrderingImageType * >(this->GetInput());
-  //InputImagePointerType inputPtr = const_cast<InputImageType *>(this->GetInput());
 		
   if ( !orderingPtr )
     { 
@@ -72,7 +73,6 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
   // configure the inputs such that all the data is available.
   //
   orderingPtr->SetRequestedRegion(orderingPtr->GetLargestPossibleRegion());
-  //inputPtr->SetRequestedRegion(inputPtr->GetLargestPossibleRegion());
 }
 	
 	
@@ -381,12 +381,24 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 ::ComputeSimplicityTerminality(CubeIteratorType cubeIt,
 			       bool *cubeBuffer)
 {
+#ifdef SKEL_DEBUG
+  std::cout << cubeIt.GetIndex() << std::endl;
+#endif
   // extract the voxels into the cubeBuffer
   for (unsigned pos = 0; pos < cubeIt.Size(); pos++)
     {
     typename OutputImageType::PixelType P = cubeIt.GetPixel(pos);
     cubeBuffer[pos] = (m_ForegroundValue == P);
     }
+#ifdef SKEL_DEBUG
+  for (unsigned pos = 0; pos < cubeIt.Size(); pos++)
+    {
+    std::cout << cubeBuffer[pos] ;
+    }
+  std::cout << std::endl;
+#endif
+
+
   // count the neighbors of the centre position to determine
   // terminality
   unsigned int ncount = 0;
@@ -397,6 +409,11 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
     if (cubeBuffer[idx])
       ++ncount;
     }
+
+#ifdef SKEL_DEBUG
+  std::cout << "Terminality " << ncount << std::endl;
+#endif
+
   bool terminality=(ncount == 1);
 
   // short circuit further work
@@ -418,6 +435,9 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 		     m_FGConnectivityTest,
 		     m_FGNeighConnectivityTest);
   
+#ifdef SKEL_DEBUG
+  std::cout << "fgCC " << fgCC << std::endl;
+#endif
 
   if (fgCC != 1) return (false);
 
@@ -436,6 +456,9 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 		     m_BGConnectivityTest,
 		     m_BGNeighConnectivityTest);
   
+#ifdef SKEL_DEBUG
+  std::cout << "bgCC " << bgCC << std::endl;
+#endif
   if (bgCC != 1) return(false);
 
   return(true);
@@ -454,21 +477,35 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 {
   // searching for first seed
   unsigned SZ = ConnectIm.size();
-  unsigned seed = 0;
-  for (unsigned J = 0; J < SZ; J++)
+  // need to change this if we use while loops to find the first seed
+  unsigned seed = SZ;
+#ifdef SKEL_DEBUG
+  std::cout << "Counter ";
+  for (unsigned pos = 0; pos < SZ; pos++)
     {
-    if (cubeBuffer[J] && ConnectivityTest[J])
-      {
-      seed = J;
-      break;
-      }
+    std::cout << cubeBuffer[pos] ;
     }
+  std::cout << std::endl;
+#endif
+
+  // set seed to max in case we don't find any start point
+  for (unsigned J = 0; J < SZ; J++)
+     {
+     if (cubeBuffer[J] && ConnectivityTest[J])
+       {
+       seed = J;
+       break;
+       }
+     }
   
-//   while ((seed != SZ) &&
-// 	 ((cubeBuffer[seed] == 0) || !ConnectivityTest[seed]))
-//     {
-//     ++seed;
-//     }
+//    while ((seed != SZ) &&
+//  	 ((cubeBuffer[seed] == 0) || !ConnectivityTest[seed]))
+//      {
+//      ++seed;
+//      }
+#ifdef SKEL_DEBUG
+   std::cout << "seed " << seed << std::endl;
+#endif
   // now label connected components
   std::vector<bool> processed(SZ, false);
   int nbCC = 0;
@@ -500,14 +537,26 @@ SkeletonizeBaseImageFilter<TOrderImage, TImage>
 	}
       }
     // Look for next seed
-    while(seed != SZ && 
+//     while(seed != SZ && 
 
-          ( processed[seed] || (cubeBuffer[seed] == 0) || !ConnectivityTest[seed] ) 
+//           ( processed[seed] || (cubeBuffer[seed] == 0) || !ConnectivityTest[seed] ) 
 
-         )
-      {
-      ++seed;
-      }    
+//          )
+//       {
+//       ++seed;
+//       }
+
+    for (;
+	 (seed < SZ) && ( processed[seed] || !cubeBuffer[seed] || !ConnectivityTest[seed] ) ;
+	 ++seed);
+
+
+//     for (;seed < SZ; ++seed)
+//       {
+//       if (!processed[seed] && cubeBuffer[seed] && ConnectivityTest[seed] )
+// 	break;
+//       }
+
     }
    
   return nbCC;
